@@ -1,0 +1,58 @@
+version: '3.4'
+
+services:
+  postgresql:
+    image: postgres:latest
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=123456
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/postgresql
+    networks:
+      - bgjobs
+
+  hang.ui:
+    image: hangui
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Hangfire.UI/Dockerfile
+    ports:
+      - '5005:80'
+    networks:
+      - bgjobs
+    depends_on:
+      - postgresql
+
+  hang.server1:
+    image: hangserver1
+    restart: always
+    build:
+      context: .
+      dockerfile: ./Hangfire.Server/Dockerfile
+    networks:
+      - bgjobs
+    depends_on:
+      - postgresql
+      - hang.ui
+
+  hang.server2:
+    image: hangserver1
+    restart: always
+    networks:
+      - bgjobs
+    depends_on:
+      - postgresql
+      - hang.ui
+      - hang.server1
+
+
+volumes:
+  pgdata:
+
+networks:
+  bgjobs:
+    driver: bridge

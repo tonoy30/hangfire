@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "Hangfire.Server": {
+      "commandName": "Project"
+    },
+    "Docker": {
+      "commandName": "Docker"
+    }
+  }
+}
